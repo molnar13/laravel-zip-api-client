@@ -1,7 +1,7 @@
-<?php
+use App\Http\Controllers\SettlementController;
 
-use Illuminate\Support\Facades\Route;
+// Publikus szűrés
+Route::get('/settlements/filter', [SettlementController::class, 'filterView'])->name('settlements.filter');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Alap CRUD (néhányat védhetünk session alapján)
+Route::resource('settlements', SettlementController::class);
