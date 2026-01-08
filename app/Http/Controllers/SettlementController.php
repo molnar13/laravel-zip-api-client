@@ -34,7 +34,10 @@ class SettlementController extends Controller
     // 3. Új város létrehozása (Form megjelenítése)
     public function create()
     {
-        $counties = $this->api->get('counties')->json();
+        // Lekérjük a megyéket az API-tól, hogy a lenyíló listába tehessük őket
+        $response = $this->api->get('counties');
+        $counties = $response->json(); // Vagy $response->json()['data'] az API szerkezetétől függően
+        
         return view('settlements.create', compact('counties'));
     }
 
