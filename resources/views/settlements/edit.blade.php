@@ -18,7 +18,7 @@
                     <div class="mb-3">
                         <label class="form-label">Irányítószám</label>
                         <input type="text" name="zip_code" class="form-control" 
-                               value="{{ old('zip_code', $settlement['zip_code']) }}" required>
+       value="{{ old('zip_code', $settlement['postal_code'] ?? $settlement['zip_code'] ?? '') }}" required>
                     </div>
 
                     <div class="mb-3">

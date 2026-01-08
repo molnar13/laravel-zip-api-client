@@ -23,6 +23,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Először a speciális útvonalak (hogy ne akadjanak össze az ID-val)
 Route::get('/settlements/filter', [SettlementController::class, 'filterView'])->name('settlements.filter');
 Route::get('/settlements/export/pdf', [SettlementController::class, 'exportPdf'])->name('settlements.export.pdf');
-
+Route::get('/settlements/export/csv', [SettlementController::class, 'exportCsv'])->name('settlements.export.csv');
 // Majd a CRUD műveletek (index, create, store, edit, update, destroy)
 Route::resource('settlements', SettlementController::class);
+Route::resource('counties', \App\Http\Controllers\CountyController::class);

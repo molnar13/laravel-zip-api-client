@@ -59,12 +59,12 @@ class SettlementController extends Controller
     }
     public function edit($id)
     {
-        // Lekérjük az adott város adatait
-        $settlement = $this->api->get("settlements/{$id}")->json();
-        
-        // Lekérjük a megyéket a legördülő listához
-        $counties = $this->api->get('counties')->json();
+        // Lekérjük az adatokat
+        $response = $this->api->get("settlements/{$id}");
+        $settlement = $response->json();
 
+        // (A kód többi része most nem fut le)
+        $counties = $this->api->get('counties')->json();
         return view('settlements.edit', compact('settlement', 'counties'));
     }
 
@@ -110,5 +110,49 @@ class SettlementController extends Controller
         
         // Letöltés indítása
         return $pdf->download('telepulesek.pdf');
+    }
+
+    // --- CSV EXPORTÁLÁS ---
+    public function exportCsv()
+    {
+        // 1. Adatok lekérése az API-tól
+        $response = $this->api->get('settlements');
+        $settlements = $response->json();
+
+        // 2. CSV Fájlnév és Fejlécek beállítása
+        $filename = "telepulesek.csv";
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        // 3. Callback függvény, ami generálja a fájlt
+        $callback = function() use($settlements) {
+            $file = fopen('php://output', 'w');
+            
+            // BOM karakter hozzáadása, hogy az Excel helyesen kezelje az ékezeteket
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // CSV Fejléc sora
+            fputcsv($file, ['Irányítószám', 'Település', 'Megye'], ';');
+
+            // Adatok kiírása soronként
+            foreach ($settlements as $s) {
+                // Ellenőrizzük, hogy van-e megye adat, ha nincs, üres stringet írunk
+                $countyName = $s['county']['name'] ?? ''; 
+                // Figyelünk az esetleges eltérő mezőnevekre (zip_code vagy postal_code)
+                $zip = $s['zip_code'] ?? $s['postal_code'] ?? '';
+
+                fputcsv($file, [$zip, $s['name'], $countyName], ';');
+            }
+
+            fclose($file);
+        };
+
+        // 4. Válasz visszaküldése streamként (így nem fogyaszt sok memóriát)
+        return response()->stream($callback, 200, $headers);
     }
 }

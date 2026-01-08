@@ -4,13 +4,16 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Települések Listája</h1>
     <div>
-        <a href="{{ route('settlements.export.pdf') }}" class="btn btn-outline-danger">PDF Export</a>
-        <a href="{{ route('settlements.filter') }}" class="btn btn-outline-primary">ABC Szűrő</a>
-        
-        @if(session('token'))
-            <a href="{{ route('settlements.create') }}" class="btn btn-success">Új Város</a>
-        @endif
-    </div>
+    <a href="{{ route('settlements.export.pdf') }}" class="btn btn-outline-danger">PDF Export</a>
+    <a href="{{ route('settlements.export.csv') }}" class="btn btn-outline-success">CSV Export</a>
+    
+    <a href="{{ route('settlements.filter') }}" class="btn btn-outline-primary">ABC Szűrő</a>
+    
+    @if(session('token'))
+        <a href="{{ route('settlements.create') }}" class="btn btn-success">Új Város</a>
+    @endif
+</div>
+    
 </div>
 
 <div class="card">

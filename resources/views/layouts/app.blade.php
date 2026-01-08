@@ -14,6 +14,7 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('settlements.index') }}">Városok</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('settlements.filter') }}">Szűrő</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('counties.index') }}">Megyék</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     @if(session('token'))
