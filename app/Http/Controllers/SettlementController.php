@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ApiService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SettlementController extends Controller
 {
@@ -59,5 +60,17 @@ class SettlementController extends Controller
     {
         $this->api->delete("settlements/{$id}");
         return redirect()->route('settlements.index')->with('success', 'Város törölve.');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        // Lekérjük az adatokat az API-tól (szűrés szerint, ha kell)
+        $response = $this->api->get('settlements');
+        $settlements = $response->json();
+
+        $pdf = Pdf::loadView('settlements.pdf', compact('settlements'));
+        
+        // Letöltés indítása
+        return $pdf->download('telepulesek.pdf');
     }
 }

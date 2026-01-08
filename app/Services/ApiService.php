@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -8,31 +10,35 @@ class ApiService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.api.url', env('API_URL'));
+        // Ha nincs beállítva az .env-ben, alapértelmezettként a localhost:8000-et használja
+        $this->baseUrl = env('API_URL', 'http://localhost:8000/api');
     }
 
-    protected function getHeaders()
+    public function get($endpoint)
     {
-        $token = session('api_token');
-        return [
-            'Accept' => 'application/json',
-            'Authorization' => $token ? "Bearer $token" : '',
-        ];
+        return Http::withToken(session('token'))
+            ->acceptJson()
+            ->get("{$this->baseUrl}/{$endpoint}");
     }
 
-    public function get($endpoint) {
-        return Http::withHeaders($this->getHeaders())->get("{$this->baseUrl}/$endpoint");
+    public function post($endpoint, $data)
+    {
+        return Http::withToken(session('token'))
+            ->acceptJson()
+            ->post("{$this->baseUrl}/{$endpoint}", $data);
     }
 
-    public function post($endpoint, $data) {
-        return Http::withHeaders($this->getHeaders())->post("{$this->baseUrl}/$endpoint", $data);
+    public function put($endpoint, $data)
+    {
+        return Http::withToken(session('token'))
+            ->acceptJson()
+            ->put("{$this->baseUrl}/{$endpoint}", $data);
     }
 
-    public function put($endpoint, $data) {
-        return Http::withHeaders($this->getHeaders())->put("{$this->baseUrl}/$endpoint", $data);
-    }
-
-    public function delete($endpoint) {
-        return Http::withHeaders($this->getHeaders())->delete("{$this->baseUrl}/$endpoint");
+    public function delete($endpoint)
+    {
+        return Http::withToken(session('token'))
+            ->acceptJson()
+            ->delete("{$this->baseUrl}/{$endpoint}");
     }
 }
