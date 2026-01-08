@@ -32,9 +32,18 @@
                     <td>{{ $s['county']['name'] ?? 'Nincs adat' }}</td>
                     <td>
                         @if(session('token'))
-                            <a href="#" class="btn btn-sm btn-warning">Szerk.</a>
-                            @else
-                            <span class="text-muted text-small">Nincs jog</span>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('settlements.edit', $s['id']) }}" class="btn btn-sm btn-warning">Szerk.</a>
+
+                                <form action="{{ route('settlements.destroy', $s['id']) }}" method="POST" 
+                                    onsubmit="return confirm('Biztosan törölni akarod ezt a várost?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger">Törlés</button>
+                                </form>
+                            </div>
+                        @else
+                            <span class="text-muted small">Nincs jog</span>
                         @endif
                     </td>
                 </tr>

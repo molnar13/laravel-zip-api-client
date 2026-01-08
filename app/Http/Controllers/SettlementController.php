@@ -57,12 +57,47 @@ class SettlementController extends Controller
         }
         return back()->withErrors('Hiba történt a mentés során.');
     }
+    public function edit($id)
+    {
+        // Lekérjük az adott város adatait
+        $settlement = $this->api->get("settlements/{$id}")->json();
+        
+        // Lekérjük a megyéket a legördülő listához
+        $counties = $this->api->get('counties')->json();
 
-    // 5. Város törlése
+        return view('settlements.edit', compact('settlement', 'counties'));
+    }
+
+    // 2. A módosítás elküldése az API-nak
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'name' => 'required|string',
+            'zip_code' => 'required|string',
+            'county_id' => 'required|integer',
+        ]);
+
+        // PUT kérés küldése
+        $response = $this->api->put("settlements/{$id}", $data);
+
+        if ($response->successful()) {
+            return redirect()->route('settlements.index')->with('success', 'Város sikeresen frissítve!');
+        }
+
+        return back()->withErrors('Nem sikerült a frissítés. Ellenőrizd az adatokat.');
+    }
+
+    // --- TÖRLÉS (DESTROY) ---
+
     public function destroy($id)
     {
-        $this->api->delete("settlements/{$id}");
-        return redirect()->route('settlements.index')->with('success', 'Város törölve.');
+        $response = $this->api->delete("settlements/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->route('settlements.index')->with('success', 'Város törölve.');
+        }
+
+        return back()->withErrors('Hiba történt a törlés során.');
     }
 
     public function exportPdf(Request $request)
