@@ -46,7 +46,6 @@
 <body>
     <header>
         {{-- A logó beágyazása base64 formátumban a legbiztosabb dompdf alatt --}}
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/logo.png'))) }}" class="logo">
         <h3>Települések és Irányítószámok</h3>
     </header>
 
@@ -67,7 +66,7 @@
             <tbody>
                 @foreach($settlements as $s)
                 <tr>
-                    <td>{{ $s['zip_code'] }}</td>
+                    <td>{{ $s['postal_code'] }}</td>
                     <td>{{ $s['name'] }}</td>
                     <td>{{ $s['county']['name'] ?? 'N/A' }}</td>
                 </tr>

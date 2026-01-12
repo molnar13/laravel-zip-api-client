@@ -17,12 +17,15 @@ Route::redirect('/', '/settlements');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 // 3. Városok kezelése (Settlements)
 
 // Először a speciális útvonalak (hogy ne akadjanak össze az ID-val)
 Route::get('/settlements/filter', [SettlementController::class, 'filterView'])->name('settlements.filter');
 Route::get('/settlements/export/pdf', [SettlementController::class, 'exportPdf'])->name('settlements.export.pdf');
-
+Route::get('/settlements/export/csv', [SettlementController::class, 'exportCsv'])->name('settlements.export.csv');
 // Majd a CRUD műveletek (index, create, store, edit, update, destroy)
 Route::resource('settlements', SettlementController::class);
+Route::resource('counties', \App\Http\Controllers\CountyController::class);

@@ -28,6 +28,10 @@
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Belépés</button>
                     </div>
+                    <div class="mt-3 text-center">
+                        <p>Nincs még fiókod?</p>
+                        <a href="{{ route('register') }}" class="btn btn-outline-secondary btn-sm">Regisztráció</a>
+                    </div>
                 </form>
             </div>
         </div>
