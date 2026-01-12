@@ -75,4 +75,43 @@ class AuthController extends Controller
         
         return redirect()->route('login')->with('success', 'Kijelentkezve.');
     }
+
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    // 2. Regisztráció elküldése az API-nak
+    public function register(Request $request)
+    {
+        // Validálás a kliens oldalon is
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6|confirmed', // a 'confirmed' miatt kell password_confirmation mező is
+        ]);
+
+        try {
+            // Adatok küldése az API /register végpontjára
+            $response = $this->api->post('register', [
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => $request->input('password'),
+                'password_confirmation' => $request->input('password_confirmation'),
+            ]);
+
+            if ($response->successful()) {
+                // Siker esetén átirányítjuk a bejelentkezéshez
+                return redirect()->route('login')->with('success', 'Sikeres regisztráció! Most már bejelentkezhetsz.');
+            } else {
+                // Ha az API hibát dob (pl. foglalt email)
+                // Megpróbáljuk kinyerni a hibaüzenetet
+                $errorMsg = $response->json()['message'] ?? 'A regisztráció sikertelen.';
+                return back()->withErrors(['email' => $errorMsg])->withInput();
+            }
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['email' => 'Nem sikerült elérni a szervert.'])->withInput();
+        }
+    }
 }
