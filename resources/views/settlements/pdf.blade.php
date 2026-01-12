@@ -66,7 +66,7 @@
             <tbody>
                 @foreach($settlements as $s)
                 <tr>
-                    <td>{{ $s['zip_code'] }}</td>
+                    <td>{{ $s['postal_code'] }}</td>
                     <td>{{ $s['name'] }}</td>
                     <td>{{ $s['county']['name'] ?? 'N/A' }}</td>
                 </tr>
