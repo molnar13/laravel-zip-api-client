@@ -44,18 +44,27 @@ class SettlementController extends Controller
     // 4. Új város mentése (API POST hívás)
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'county_id' => 'required|integer',
-            'zip_code' => 'required|string',
+        // Validálás a Frontend oldalon
+        $request->validate([
+            'name' => 'required',
+            'zip_code' => 'required', // A formban még zip_code a neve
+            'county_id' => 'required'
         ]);
 
-        $response = $this->api->post('settlements', $data);
+        // Adatok küldése az API-nak
+        // ITT A JAVÍTÁS: A 'zip_code'-ot átnevezzük 'postal_code'-ra küldés előtt!
+        $response = $this->api->post('settlements', [
+            'name' => $request->input('name'),
+            'county_id' => $request->input('county_id'),
+            'postal_code' => $request->input('zip_code'), 
+        ]);
 
         if ($response->successful()) {
             return redirect()->route('settlements.index')->with('success', 'Város sikeresen hozzáadva!');
         }
-        return back()->withErrors('Hiba történt a mentés során.');
+
+        // Ha hiba van, írjuk ki a pontos hibát a fejlesztéshez!
+        return back()->withErrors(['api_error' => 'API Hiba: ' . $response->body()])->withInput();
     }
     public function edit($id)
     {

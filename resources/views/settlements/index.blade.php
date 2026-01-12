@@ -30,7 +30,7 @@
             <tbody>
                 @forelse($settlements as $s)
                 <tr>
-                    <td>{{ $s['zip_code'] ?? '-' }}</td>
+                    <td>{{ $s['postal_code'] ?? $s['zip_code'] ?? '-' }}</td>
                     <td>{{ $s['name'] }}</td>
                     <td>{{ $s['county']['name'] ?? 'Nincs adat' }}</td>
                     <td>
