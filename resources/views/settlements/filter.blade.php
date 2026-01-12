@@ -25,8 +25,13 @@
     </div>
 
     <div id="cities-wrapper" class="card d-none">
-        <div class="card-header bg-primary text-white">
-            Találatok
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Találatok</span>
+            
+            <div id="export-buttons" class="d-none">
+                <a id="btn-export-pdf" href="#" class="btn btn-sm btn-light text-danger fw-bold">PDF</a>
+                <a id="btn-export-csv" href="#" class="btn btn-sm btn-light text-success fw-bold">CSV</a>
+            </div>
         </div>
         <div class="card-body">
             <ul id="cities-list" class="list-group list-group-flush">
@@ -45,6 +50,9 @@
     const initialsContainer = document.getElementById('initials-container');
     const citiesWrapper = document.getElementById('cities-wrapper');
     const citiesList = document.getElementById('cities-list');
+    const exportButtons = document.getElementById('export-buttons');
+    const btnPdf = document.getElementById('btn-export-pdf');
+    const btnCsv = document.getElementById('btn-export-csv');
 
     let currentCities = []; 
 
@@ -108,15 +116,16 @@
 
     // 3. Városok listázása betű alapján
     function renderCities(letter) {
+        const countyId = countySelect.value; // Aktuális megye ID
+        
+        // 1. Szűrés a böngészőben (hogy gyorsan lássa a listát)
         const filteredCities = currentCities.filter(c => c.name.charAt(0).toUpperCase() === letter);
         
         citiesList.innerHTML = '';
         filteredCities.forEach(city => {
             const li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            // Ellenőrizzük a mezőneveket (zip_code vagy postal_code)
-            const zip = city.zip_code || city.postal_code || '';
-            
+            const zip = city.postal_code || city.zip_code || '';
             li.innerHTML = `
                 <span>${city.name}</span>
                 <span class="badge bg-secondary rounded-pill">${zip}</span>
@@ -125,6 +134,22 @@
         });
 
         citiesWrapper.classList.remove('d-none');
+
+        // --- ÚJ RÉSZ: Export gombok beállítása ---
+        
+        // Alap útvonalak (Laravel route helperrel)
+        const pdfBaseUrl = "{{ route('settlements.export.pdf') }}";
+        const csvBaseUrl = "{{ route('settlements.export.csv') }}";
+
+        // Paraméterek összeállítása
+        const params = `?county_id=${countyId}&letter=${letter}`;
+
+        // Linkek frissítése
+        btnPdf.href = pdfBaseUrl + params;
+        btnCsv.href = csvBaseUrl + params;
+
+        // Gombok megjelenítése
+        exportButtons.classList.remove('d-none');
     }
 </script>
 @endsection

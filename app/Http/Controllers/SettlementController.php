@@ -109,22 +109,21 @@ class SettlementController extends Controller
         return back()->withErrors('Hiba történt a törlés során.');
     }
 
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
-        // Lekérjük az adatokat
-        $response = $this->api->get('settlements');
+        // 1. Át kell adni a kapott paramétereket ($request->all()) az API-nak
+        $response = $this->api->get('settlements', $request->all());
+        
         $data = $response->json();
-        $allSettlements = $data['data'] ?? $data;
+        $settlements = $data['data'] ?? $data;
 
-        // BIZTONSÁGI LIMIT: Csak az első 300 elemet engedjük PDF-be, 
-        // különben összeomlik a szerver.
-        $settlements = array_slice($allSettlements, 0, 300);
+        // 2. Ha szűrünk (van betű vagy név), akkor NE vágjuk le a listát!
+        // Csak akkor limitáljunk, ha teljes listát kérnek le.
+        if (!$request->has('letter') && !$request->has('name') && count($settlements) > 300) {
+            $settlements = array_slice($settlements, 0, 300);
+        }
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('settlements.pdf', compact('settlements'));
-        
-        // Opcionális: A papír méretét állítsd A4-re, fekvőre, hogy több adat kiférjen
-        $pdf->setPaper('a4', 'landscape');
-
         return $pdf->download('telepulesek.pdf');
     }
 

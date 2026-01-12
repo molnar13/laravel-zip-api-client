@@ -14,11 +14,12 @@ class ApiService
         $this->baseUrl = env('API_URL', 'http://localhost:8000/api');
     }
 
-    public function get($endpoint)
+    // Fontos: A második paraméter ($params) fogadja a szűrést!
+    public function get($endpoint, $params = [])
     {
+        // Az Http::get második paramétereként adjuk át a $params tömböt
         return Http::withToken(session('token'))
-            ->acceptJson()
-            ->get("{$this->baseUrl}/{$endpoint}");
+                   ->get($this->baseUrl . '/' . $endpoint, $params);
     }
 
     public function post($endpoint, $data)
